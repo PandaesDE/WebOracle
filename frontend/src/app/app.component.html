@@ -1,0 +1,62 @@
+<main class="oracle-container">
+  <div class="stars"></div>
+
+  <header>
+    <h1>The Ethereal Oracle</h1>
+    <p>Seek guidance from the void. Speak your mind.</p>
+  </header>
+
+  <section class="interaction-zone" [class.is-loading]="state === 'loading'"
+    [class.is-answered]="state === 'answered-short' || state === 'answered-long'">
+
+    <!-- The Magic Orb -->
+    <div class="orb-container" (click)="readLongAnswer()">
+      <div class="orb">
+        <div class="orb-inner"></div>
+        <div class="orb-sparkles"></div>
+      </div>
+
+      <!-- Short Answer Overlay -->
+      <div class="short-answer-overlay" *ngIf="state === 'answered-short' || state === 'answered-long'"
+        [class.revealed]="true">
+        <h2>{{ response?.shortAnswer }}</h2>
+        <span class="click-hint" *ngIf="state === 'answered-short'">Click to reveal deeper truth</span>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-wrapper" *ngIf="state === 'idle'">
+      <form (submit)="askQuestion($event)">
+        <input type="text" placeholder="What troubles your heart?" [(ngModel)]="question" name="question"
+          autocomplete="off" required>
+        <button type="submit" [disabled]="!question.trim()">Ask</button>
+      </form>
+    </div>
+
+    <!-- Long Answer Area & Products -->
+    <div class="revelation-zone" *ngIf="state === 'answered-long'">
+      <div class="long-answer-card glass-panel">
+        <p>{{ response?.longAnswer }}</p>
+      </div>
+
+      <div class="products-section" *ngIf="response?.recommendations?.length">
+        <h3>Guided Tools for Your Journey</h3>
+        <div class="products-grid">
+          <a *ngFor="let product of response?.recommendations" [href]="product.affiliateUrl" target="_blank"
+            class="product-card glass-panel">
+            <div class="product-image">
+              <img [src]="product.imageUrl" [alt]="product.title">
+            </div>
+            <div class="product-details">
+              <h4>{{ product.title }}</h4>
+              <span class="view-btn">Discover</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <button class="reset-btn" (click)="reset()">Ask Another Question</button>
+    </div>
+
+  </section>
+</main>

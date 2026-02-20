@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  mssql_prod:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: weboracle_mssql_prod
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Oracle!Password123
+    volumes:
+      - mssqldata_prod:/var/opt/mssql
+    healthcheck:
+      test: [ "CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "Oracle!Password123", "-Q", "SELECT 1", "-No" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # This init container runs once to create the "weboracle" database inside MSSQL automatically
+  db_init:
+    image: mcr.microsoft.com/mssql-tools
+    container_name: weboracle_db_init
+    depends_on:
+      mssql_prod:
+        condition: service_healthy
+    command: >
+      /bin/bash -c " /opt/mssql-tools/bin/sqlcmd -S mssql_prod -U sa -P 'Oracle!Password123' -Q 'CREATE DATABASE weboracle;' || exit 0 "
+
+  backend_prod:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: weboracle_backend_prod
+    environment:
+      # Point to the database container (mssql_prod) instead of localhost
+      - SPRING_DATASOURCE_URL=jdbc:sqlserver://mssql_prod:1433;databaseName=weboracle;trustServerCertificate=true;encrypt=true
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=Oracle!Password123
+    ports:
+      - "8080:8080"
+    depends_on:
+      db_init:
+        condition: service_completed_successfully
+
+  frontend_prod:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: weboracle_frontend_prod
+    ports:
+      - "80:80"
+    depends_on:
+      - backend_prod
+
+volumes:
+  mssqldata_prod:
