@@ -19,8 +19,9 @@ export interface AskResponse {
 })
 export class OracleService {
     private http = inject(HttpClient);
+    private backendPort = 8080;
 
     ask(question: string): Observable<AskResponse> {
-        return this.http.post<AskResponse>('http://localhost:8080/api/oracle/ask', { question });
+        return this.http.post<AskResponse>(`/api/oracle/ask`, { question });
     }
 }

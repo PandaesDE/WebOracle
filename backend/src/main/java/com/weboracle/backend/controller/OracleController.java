@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/oracle")
-@CrossOrigin(origins = "http://localhost:4200") // Allow Angular dev server
 @RequiredArgsConstructor
 public class OracleController {
 
