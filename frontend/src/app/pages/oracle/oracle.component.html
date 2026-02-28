@@ -1,0 +1,91 @@
+<main class="oracle-container" [class]="state">
+    <div class="stars"></div>
+
+    <header [class.hidden]="state !== 'idle'">
+        <h1>The Ethereal Oracle</h1>
+        <p>Seek guidance from the void. Speak your mind.</p>
+    </header>
+
+    <!-- Spacer to prevent mode ring from overlapping header -->
+    <div class="sphere-spacer" *ngIf="state === 'idle'"></div>
+
+    <section class="interaction-zone" [class.is-loading]="state === 'loading'"
+        [class.is-answered]="state === 'answered-short' || state === 'answered-long'">
+
+        <div class="sphere-arena">
+            <!-- Modes Ring -->
+            <div class="modes-ring" [style.transform]="'rotate(' + baseAngle + 'deg)'"
+                [class.hidden]="state !== 'idle'">
+                <div *ngFor="let mode of modes; let i = index" class="mode-wrapper"
+                    [style.transform]="'rotate(' + (i * (360 / modes.length)) + 'deg)'">
+                    <div class="mode-item" [class.active]="i === activeModeIndex" (click)="selectMode(i)">
+                        <span class="mode-label"
+                            [style.transform]="'rotate(' + (- (i * (360 / modes.length)) - baseAngle) + 'deg)'">{{
+                            mode.label
+                            }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- The Magic Orb -->
+            <div class="orb-container" (dblclick)="onSphereDoubleClick()"
+                (click)="state === 'answered-short' ? readLongAnswer() : null">
+                <div class="orb">
+                    <div class="orb-inner"></div>
+                    <div class="orb-sparkles"></div>
+                </div>
+
+                <!-- Invisible Input Field in Sphere -->
+                <textarea *ngIf="state === 'idle'" #sphereInput class="sphere-input" placeholder="Ask the void..."
+                    [(ngModel)]="question" (keydown.enter)="$event.preventDefault(); askQuestion($event)"
+                    autocomplete="off"></textarea>
+
+                <!-- Loading Text Animation -->
+                <div class="loading-text" *ngIf="state === 'loading'">
+                    <span class="distorted-text">{{ question }}</span>
+                </div>
+
+                <!-- Glass Reflection Overlay for 3D effect (above text, below answer) -->
+                <div class="glass-reflection"></div>
+
+                <!-- Short Answer Overlay -->
+                <div class="short-answer-overlay" *ngIf="state === 'answered-short' || state === 'answered-long'"
+                    [class.revealed]="true">
+                    <h2>{{ response?.shortAnswer }}</h2>
+                    <span class="click-hint" *ngIf="state === 'answered-short'">Click to reveal deeper truth</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button (below the sphere) -->
+        <div class="submit-action" *ngIf="state === 'idle'">
+            <button (click)="askQuestion()" [disabled]="!question.trim()">Submit Question</button>
+        </div>
+
+        <!-- Long Answer Area & Products -->
+        <div class="revelation-zone" *ngIf="state === 'answered-long'">
+            <div class="long-answer-card glass-panel">
+                <p>{{ response?.longAnswer }}</p>
+            </div>
+
+            <div class="products-section" *ngIf="response?.recommendations?.length">
+                <h3>Guided Tools for Your Journey</h3>
+                <div class="products-grid">
+                    <a *ngFor="let product of response?.recommendations" [href]="product.affiliateUrl" target="_blank"
+                        class="product-card glass-panel">
+                        <div class="product-image">
+                            <img [src]="product.imageUrl" [alt]="product.title">
+                        </div>
+                        <div class="product-details">
+                            <h4>{{ product.title }}</h4>
+                            <span class="view-btn">Discover</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <button class="reset-btn" (click)="reset()">Ask Another Question</button>
+        </div>
+
+    </section>
+</main>

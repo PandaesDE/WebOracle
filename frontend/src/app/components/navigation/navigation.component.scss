@@ -1,0 +1,85 @@
+.transparent-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: linear-gradient(to bottom, rgba(5, 1, 10, 0.9) 0%, rgba(5, 1, 10, 0.4) 70%, transparent 100%);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(168, 85, 247, 0.1);
+    transition: all 0.3s ease;
+
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .nav-brand {
+            text-decoration: none;
+
+            .brand-text {
+                font-family: 'Playfair Display', serif;
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #fff;
+                letter-spacing: 1px;
+                text-shadow: 0 0 10px rgba(216, 180, 254, 0.6);
+                transition: color 0.3s;
+
+                &:hover {
+                    color: #d8b4fe;
+                }
+            }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+
+            a {
+                font-family: 'Outfit', sans-serif;
+                text-decoration: none;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 0.95rem;
+                font-weight: 500;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                transition: all 0.3s ease;
+                position: relative;
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -4px;
+                    left: 0;
+                    width: 0;
+                    height: 2px;
+                    background: #d8b4fe;
+                    transition: width 0.3s ease;
+                    box-shadow: 0 0 8px rgba(168, 85, 247, 0.8);
+                }
+
+                &:hover {
+                    color: #fff;
+
+                    &::after {
+                        width: 100%;
+                    }
+                }
+
+                &.active {
+                    color: #d8b4fe;
+                    text-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+
+                    &::after {
+                        width: 100%;
+                    }
+                }
+            }
+        }
+    }
+}
